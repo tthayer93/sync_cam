@@ -1,0 +1,103 @@
+<launch>
+    <arg name="enable_view" default="false"/>
+    <arg name="enable_camera0" default="true"/>
+    <arg name="enable_camera1" default="false"/>
+    <arg name="enable_camera2" default="false"/>
+    <node name="sync_pulse" pkg="sync_cam" type="sync_pulse" output="screen">
+        <rosparam>
+            delay: 10.0
+            rate: 5.0
+        </rosparam>
+        <remap from="sync/pulse" to="sync/pulse"/>
+    </node>
+	<group ns="camera2" if="$(arg enable_camera2)">
+        <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+            <rosparam>
+                video_device: /dev/video2
+                image_width: 800
+                image_height: 600
+                pixel_format: mjpeg
+                camera_frame_id: usb_cam
+                io_method: mmap
+            </rosparam>
+            <remap from="usb_cam" to="usb_cam"/>
+        </node>
+        <node name="sync_camera" pkg="sync_cam" type="sync_camera" output="screen">
+            <rosparam>
+                camera_suffix: camera2
+                save_path: /home/minitom/Desktop/images
+            </rosparam>
+            <remap from="sync/pulse" to="/sync/pulse"/>
+            <remap from="navsat/fix" to="/navsat/fix"/>
+            <remap from="camera/image" to="usb_cam/image_raw"/>
+        </node>
+        <group if="$(arg enable_view)">
+            <node name="image_view" pkg="image_view" type="image_view" output="screen">
+                <rosparam>
+                    autosize: false
+                </rosparam>
+                <remap from="image" to="usb_cam/image_raw"/>
+            </node>
+        </group>
+    </group>
+    <group ns="camera1" if="$(arg enable_camera1)">
+        <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+            <rosparam>
+                video_device: /dev/video1
+                image_width: 1920
+                image_height: 1080
+                pixel_format: yuyv
+                camera_frame_id: usb_cam
+                io_method: mmap
+            </rosparam>
+            <remap from="usb_cam" to="usb_cam"/>
+        </node>
+        <node name="sync_camera" pkg="sync_cam" type="sync_camera" output="screen">
+            <rosparam>
+                camera_suffix: camera1
+                save_path: /home/minitom/Desktop/images
+            </rosparam>
+            <remap from="sync/pulse" to="/sync/pulse"/>
+            <remap from="navsat/fix" to="/navsat/fix"/>
+            <remap from="camera/image" to="usb_cam/image_raw"/>
+        </node>
+        <group if="$(arg enable_view)">
+            <node name="image_view" pkg="image_view" type="image_view" output="screen">
+                <rosparam>
+                    autosize: false
+                </rosparam>
+                <remap from="image" to="usb_cam/image_raw"/>
+            </node>
+        </group>
+    </group>
+    <group ns="camera0" if="$(arg enable_camera0)">
+        <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+            <rosparam>
+                video_device: /dev/video0
+                image_width: 640
+                image_height: 480
+                pixel_format: yuyv
+                camera_frame_id: usb_cam
+                io_method: userptr
+            </rosparam>
+            <remap from="usb_cam" to="usb_cam"/>
+        </node>
+        <node name="sync_camera" pkg="sync_cam" type="sync_camera" output="screen">
+            <rosparam>
+                camera_suffix: camera0
+                save_path: /home/thomas/Desktop/images
+            </rosparam>
+            <remap from="sync/pulse" to="/sync/pulse"/>
+            <remap from="navsat/fix" to="/navsat/fix"/>
+            <remap from="camera/image" to="usb_cam/image_raw"/>
+        </node>
+        <group if="$(arg enable_view)">
+            <node name="image_view" pkg="image_view" type="image_view" output="screen">
+                <rosparam>
+                    autosize: false
+                </rosparam>
+                <remap from="image" to="usb_cam/image_raw"/>
+            </node>
+        </group>
+    </group>
+</launch>
