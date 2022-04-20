@@ -26,7 +26,7 @@ std::string get_date_time_str(){
 	struct tm *current;
 	current = localtime(&now);
 	std::string str = "                   ";
-	sprintf(&str[0], "%04d-%02d-%02d_%02d:%02d:%02d", current->tm_year, current->tm_mon, current->tm_mday, current->tm_hour, current->tm_min, current->tm_sec);
+	sprintf(&str[0], "%04d-%02d-%02d_%02d:%02d:%02d", current->tm_year + 1900, current->tm_mon + 1, current->tm_mday, current->tm_hour, current->tm_min, current->tm_sec);
 	return str;
 }
 
@@ -73,11 +73,11 @@ void received_pulse(const std_msgs::Int32& in_pulse){
 
 /*Execute program.*/
 int main(int argc, char **argv){
-	ros::init(argc, argv, "sync_pulse");
+	ros::init(argc, argv, "sync_cam_camera");
 	ros::NodeHandle nh;
 	ros::NodeHandle node_private("~");
 	//Create message subscribers
-	ros::Subscriber sub_pulse = nh.subscribe("sync/pulse", 1000, &received_pulse);
+	ros::Subscriber sub_pulse = nh.subscribe("sync_cam/pulse", 1000, &received_pulse);
 	ros::Subscriber sub_navsat = nh.subscribe("navsat/fix", 1000, &received_navsat);
 	image_transport::ImageTransport it(nh);
 	image_transport::Subscriber sub_image = it.subscribe("camera/image", 1, received_image);
